@@ -2,11 +2,19 @@
 
 <div class="container">
 <h2> User Settings</h2>
-<form #form="ngForm">
-    <div class="form-group" ngNativeValidate>
+<form #form="ngForm" (ngSubmit)="onSubmit(form)">
+    <div class="form-group" >
+        <!-- ngNativeValidate -->
         <label for="name">Name</label>
-        <input  type="text"  id="name" name="name" class="form-control" 
-        [(ngModel)]="userSettings.name" required  pattern="ms.*"/>
+        <input id="name" name="name" class="form-control" 
+        [(ngModel)]="userSettings.name" required 
+        (blur)="onBlur(nameField)"
+        #nameField="ngModel" [class.field-error]="form.submitted && nameField.invalid"> 
+         <div [hidden]="!form.submitted || nameField.valid"
+         class="alert alert-danger">Enter a name </div>
+        <!-- <div [hidden]="nameField.invalid || nameField.untouched"
+         class="alert alert-danger">Enter a name </div>
+        // show error message on invalid details or skipping the required field immediately-->
     </div>
 
        <div class="form-check form-group">
@@ -42,9 +50,10 @@
          <div class="form-group">
             <label for="subscriptionType"> Subscription Type</label>
             <select class="form-control" id= "subscriptionType" name="subscriptionType" [(ngModel)]="userSettings.subscriptionType">
-                <option>Monthly</option>
-                <option>Annual</option>
-                <option>LifeTime</option>
+                <option *ngFor="let type of subscriptionTypes | async">
+                    {{ type  }}
+                </option>
+               
             </select>
             </div>
             
@@ -52,6 +61,10 @@
                 <label for="notes">Notes</label>
                 <textarea id="notes" name="notes" 
                         class="form-control" rows=3 [(ngModel)]="userSettings.notes"></textarea>
+            </div>
+            <div [hidden]="!postError"
+            class="alert alert-danger">
+            {{ postErrorMessage }}
             </div>            
         <button class="btn btn-primary">Send</button>
 </form>
